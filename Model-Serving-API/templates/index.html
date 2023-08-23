@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Regression Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        p {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        #prediction-result {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>I-HUB Old Cars</h1>
+    <h3>Check your car price now!!!</h3>
+    <img src="https://www.bristolstreet.co.uk/custom/101280.png" alt="Car Image" width="350">
+
+    <form id="prediction-form">
+        <label for="mileage">Mileage:</label>
+        <input type="number" step="any" name="mileage" id="mileage" required><br>
+
+        <label for="EngineV">EngineV:</label>
+        <input type="number" step="any" name="EngineV" id="EngineV" required><br>
+
+        <label for="Brand">Brand:</label>
+        <select name="Brand" id="Brand" required>
+            {% for brand in brands %}
+                <option value="{{ brand }}">{{ brand }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="Body">Body:</label>
+        <select name="Body" id="Body" required>
+            {% for body in bodies %}
+                <option value="{{ body }}">{{ body }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="Engine_Type">Engine Type:</label>
+        <select name="Engine_Type" id="Engine_Type" required>
+            {% for engine_type in engine_types %}
+                <option value="{{ engine_type }}">{{ engine_type }}</option>
+            {% endfor %}
+        </select><br>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <p id="prediction-result"></p>
+
+
+<script>
+    const form = document.getElementById("prediction-form");
+    const resultElement = document.getElementById("prediction-result");
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const data = {};
+
+        for (const [key, value] of formData.entries()) {
+            data[key] = value;
+        }
+
+        try {
+            const response = await fetch("/predict/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams(data),
+            });
+        const responseText = await response.text();
+        console.log("Response Text:", responseText);
+            if (response.ok) {
+                alert( responseText );
+                if (result.prediction !== undefined) {
+                    resultElement.textContent = `Predicted Price: ${parseFloat(result.prediction).toFixed(2)}`;
+                } else {
+                    resultElement.textContent = "Prediction result is not available.";
+                }
+            } else {
+                resultElement.textContent = "Error occurred during prediction.";
+            }
+        } catch (error) {
+        }
+    });
+</script>
+
+</body>
+</html>
